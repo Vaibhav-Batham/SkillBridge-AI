@@ -1,6 +1,7 @@
  import {User}  from "../models/user.model.js"
  import bcrypt from "bcryptjs"
  import jwt from "jsonwebtoken"
+ import { Blacklisttoken } from "../models/blacklist.model.js"
  
 
  // it is my register controller 
@@ -81,4 +82,43 @@
     })
  }
 
- export  {registerUserController , loginUserController};
+
+ // it is my logout controller
+
+ async function logoutUserController(req,res) {
+    const token = req.cookies.token
+
+    if(token){
+      
+        await Blacklisttoken.create({token})
+    }
+
+    res.clearCookie("token")
+
+    res.status(200).json({
+        message: "User logged out successfully"
+    })
+    
+ }
+
+
+
+ // it is my get me controller 
+
+ async function getMeController(req,res) {
+
+    const user = await User.findById(req.user.id)
+
+
+    res.status(200).json({
+        message: "User details fetched successfully",
+        user:{
+            id: user._id,
+            username:user.username,
+            email:user.email
+        }
+    })
+
+    
+ }
+ export  {registerUserController , loginUserController , logoutUserController , getMeController};
